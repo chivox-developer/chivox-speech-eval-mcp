@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 语音评测</title>
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-light: #818cf8;
+    --primary-dark: #3730a3;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --success: #10b981;
+    --error: #ef4444;
+    --warning: #f59e0b;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.08), 0 4px 6px -4px rgba(0,0,0,.04);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ---- Header ---- */
+  .header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-lg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header h1 { font-size: 20px; font-weight: 600; }
+  .header .user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+  }
+  .header .user-info span { opacity: .85; }
+  .btn-logout {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background .2s;
+  }
+  .btn-logout:hover { background: rgba(255,255,255,.25); }
+
+  /* ---- Login ---- */
+  .login-overlay {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  .login-card {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    width: 380px;
+    box-shadow: 0 25px 50px rgba(0,0,0,.15);
+  }
+  .login-card h2 {
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 24px;
+  }
+  .login-card .subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 28px;
+    font-size: 14px;
+  }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--text-secondary);
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(79,70,229,.1);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+    width: 100%;
+  }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-secondary {
+    background: white;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: #f1f5f9; }
+  .btn-success { background: var(--success); color: white; }
+  .btn-success:hover { background: #059669; }
+  .btn-danger { background: var(--error); color: white; }
+  .btn-danger:hover { background: #dc2626; }
+  .login-error {
+    color: var(--error);
+    font-size: 13px;
+    margin-bottom: 12px;
+    text-align: center;
+    display: none;
+  }
+
+  /* ---- Main Layout ---- */
+  .main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  /* ---- Tabs ---- */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: white;
+    padding: 4px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all .2s;
+  }
+  .tab:hover { color: var(--text); background: #f1f5f9; }
+  .tab.active {
+    background: var(--primary);
+    color: white;
+  }
+
+  /* ---- Cards ---- */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ---- Tool List ---- */
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .tool-item {
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .tool-item:hover {
+    border-color: var(--primary-light);
+    background: #f5f3ff;
+  }
+  .tool-item.selected {
+    border-color: var(--primary);
+    background: #ede9fe;
+  }
+  .tool-item .tool-name {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: var(--primary-dark);
+  }
+  .tool-item .tool-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ---- Eval Form ---- */
+  .eval-form { display: flex; flex-direction: column; gap: 14px; }
+  .form-row { display: flex; gap: 14px; }
+  .form-row > * { flex: 1; }
+  .input-group {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+  }
+  .input-group .form-group { flex: 1; margin-bottom: 0; }
+
+  /* ---- Result ---- */
+  .result-panel {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 16px;
+    display: none;
+  }
+  .result-panel.visible { display: block; }
+  .result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .result-header h4 { font-size: 14px; }
+
+  .score-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .score-item {
+    text-align: center;
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+  }
+  .score-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .score-value.high { color: var(--success); }
+  .score-value.medium { color: var(--warning); }
+  .score-value.low { color: var(--error); }
+  .score-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  .result-json {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 14px;
+    border-radius: 8px;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    max-height: 300px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  /* ---- Streaming ---- */
+  .stream-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #cbd5e1;
+  }
+  .status-dot.connected { background: var(--success); }
+  .status-dot.recording {
+    background: var(--error);
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .status-dot.processing {
+    background: var(--warning);
+    animation: pulse 1s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .5; transform: scale(1.3); }
+  }
+
+  .audio-viz {
+    height: 60px;
+    background: #1e293b;
+    border-radius: 8px;
+    margin: 12px 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .audio-viz canvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  .stream-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 16px 0;
+  }
+
+  .btn-record {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 3px solid var(--error);
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s;
+  }
+  .btn-record:hover { background: #fef2f2; }
+  .btn-record .inner {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--error);
+    transition: all .2s;
+  }
+  .btn-record.recording .inner {
+    border-radius: 4px;
+    width: 22px;
+    height: 22px;
+  }
+
+  /* ---- Loading ---- */
+  .loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin .6s linear infinite;
+  }
+  .loading.dark {
+    border-color: rgba(0,0,0,.1);
+    border-top-color: var(--primary);
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---- Toast ---- */
+  .toast {
+    position: fixed;
+    top: 80px;
+    right: 24px;
+    background: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,.12);
+    font-size: 14px;
+    z-index: 200;
+    transform: translateX(120%);
+    transition: transform .3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 360px;
+  }
+  .toast.show { transform: translateX(0); }
+  .toast.error { border-left: 4px solid var(--error); }
+  .toast.success { border-left: 4px solid var(--success); }
+
+  .hidden { display: none !important; }
+
+  /* ---- Detail Table ---- */
+  .detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 8px;
+  }
+  .detail-table th, .detail-table td {
+    padding: 8px 12px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-table th {
+    background: #f1f5f9;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ Login ============ -->
+<div id="loginOverlay" class="login-overlay">
+  <div class="login-card">
+    <h2>AI 语音评测</h2>
+    <p class="subtitle">登录以使用语音评测服务</p>
+    <div id="loginError" class="login-error"></div>
+    <div class="form-group">
+      <label>用户名</label>
+      <input type="text" id="loginUser" placeholder="输入用户名" value="user1">
+    </div>
+    <div class="form-group">
+      <label>密码</label>
+      <input type="password" id="loginPass" placeholder="输入密码" value="pass123">
+    </div>
+    <button class="btn btn-primary" id="btnLogin" onclick="doLogin()" style="margin-top: 8px;">
+      登 录
+    </button>
+  </div>
+</div>
+
+<!-- ============ Header ============ -->
+<div class="header hidden" id="appHeader">
+  <h1>AI 语音评测</h1>
+  <div class="user-info">
+    <span id="userName"></span>
+    <button class="btn-logout" onclick="doLogout()">退出</button>
+  </div>
+</div>
+
+<!-- ============ Main ============ -->
+<div class="main hidden" id="appMain">
+
+  <!-- 加载工具按钮（初始状态） -->
+  <div class="card" id="loadToolsCard">
+    <div style="text-align:center;padding:20px 0;">
+      <p style="color:var(--text-secondary);margin-bottom:16px;font-size:15px;">点击下方按钮获取可用的评测工具</p>
+      <button class="btn btn-primary" id="btnLoadTools" onclick="loadTools()" style="width:auto;padding:12px 32px;">
+        获取评测工具
+      </button>
+    </div>
+  </div>
+
+  <!-- 工具加载后显示的内容 -->
+  <div id="appContent" class="hidden">
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" data-tab="eval" onclick="switchTab('eval')">非流式评测</div>
+    <div class="tab" data-tab="stream" onclick="switchTab('stream')">流式评测</div>
+  </div>
+
+  <!-- ====== Tab: 非流式评测 ====== -->
+  <div id="tabEval">
+    <!-- 工具选择 -->
+    <div class="card">
+      <div class="card-title">选择评测工具</div>
+      <div class="tool-grid" id="toolGrid"></div>
+    </div>
+
+    <!-- 评测参数 -->
+    <div class="card">
+      <div class="card-title">评测参数</div>
+      <div class="eval-form">
+        <div class="form-group">
+          <label>参考文本 (ref_text)</label>
+          <input type="text" id="refText" placeholder="例如: hello world" value="hello">
+        </div>
+
+        <div class="form-group">
+          <label>音频来源</label>
+          <div style="display:flex; gap:12px; margin-bottom:8px;">
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:13px;">
+              <input type="radio" name="audioSrc" value="url" checked onchange="toggleAudioSrc()"> 音频 URL
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:13px;">
+              <input type="radio" name="audioSrc" value="file" onchange="toggleAudioSrc()"> 上传文件
+            </label>
+          </div>
+          <div id="audioUrlGroup">
+            <input type="text" id="audioUrl" placeholder="输入音频 URL" value="https://dict.youdao.com/dictvoice?audio=hello&type=1">
+          </div>
+          <div id="audioFileGroup" class="hidden">
+            <input type="file" id="audioFile" accept="audio/*">
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="btnEval" onclick="doEval()">
+          开始评测
+        </button>
+      </div>
+    </div>
+
+    <!-- 评测结果 -->
+    <div class="result-panel" id="evalResult">
+      <div class="result-header">
+        <h4>评测结果</h4>
+        <button class="btn btn-secondary" style="padding:4px 12px;font-size:12px;" onclick="toggleJson()">
+          查看 JSON
+        </button>
+      </div>
+      <div class="score-grid" id="scoreGrid"></div>
+      <div id="detailSection"></div>
+      <div class="result-json hidden" id="resultJson"></div>
+    </div>
+  </div>
+
+  <!-- ====== Tab: 流式评测 ====== -->
+  <div id="tabStream" class="hidden">
+    <div class="card">
+      <div class="card-title">流式评测参数</div>
+      <div class="eval-form">
+        <div class="form-group">
+          <label>评测类型</label>
+          <select id="streamCoreType"></select>
+        </div>
+        <div class="form-group">
+          <label>参考文本</label>
+          <textarea id="streamRefText" rows="2" placeholder="请输入要朗读的文本">hello world</textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">录音 & 评测</div>
+      <div class="stream-status">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">等待开始</span>
+      </div>
+
+      <div class="audio-viz">
+        <canvas id="vizCanvas"></canvas>
+      </div>
+
+      <div class="stream-controls">
+        <button class="btn-record" id="btnRecord" onclick="toggleRecord()">
+          <div class="inner"></div>
+        </button>
+      </div>
+      <p style="text-align:center;font-size:12px;color:var(--text-secondary);">
+        点击录音按钮开始，再次点击停止
+      </p>
+    </div>
+
+    <!-- 流式评测结果 -->
+    <div class="result-panel" id="streamResult">
+      <div class="result-header">
+        <h4>评测结果</h4>
+        <button class="btn btn-secondary" style="padding:4px 12px;font-size:12px;" onclick="toggleStreamJson()">
+          查看 JSON
+        </button>
+      </div>
+      <div class="score-grid" id="streamScoreGrid"></div>
+      <div id="streamDetailSection"></div>
+      <div class="result-json hidden" id="streamResultJson"></div>
+    </div>
+  </div>
+
+  </div><!-- /appContent -->
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// 全局状态
+// ============================================================
+let token = '';
+let userName = '';
+let tools = [];
+let selectedTool = null;
+
+// 流式评测状态
+let mediaRecorder = null;
+let audioContext = null;
+let analyser = null;
+let animFrameId = null;
+let ws = null;
+let isRecording = false;
+
+const API = '';  // 同源，留空
+
+// ============================================================
+// 工具函数
+// ============================================================
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+async function api(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', ...opts.headers };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const resp = await fetch(API + path, { ...opts, headers });
+  const data = await resp.json();
+  if (!resp.ok) throw new Error(data.error || `HTTP ${resp.status}`);
+  return data;
+}
+
+function scoreClass(v) {
+  if (v >= 80) return 'high';
+  if (v >= 60) return 'medium';
+  return 'low';
+}
+
+// ============================================================
+// 认证
+// ============================================================
+async function doLogin() {
+  const btn = document.getElementById('btnLogin');
+  const errEl = document.getElementById('loginError');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span> 登录中...';
+  errEl.style.display = 'none';
+
+  try {
+    const data = await api('/api/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        username: document.getElementById('loginUser').value,
+        password: document.getElementById('loginPass').value,
+      }),
+    });
+    token = data.token;
+    userName = data.user.name;
+    document.getElementById('userName').textContent = userName;
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('appHeader').classList.remove('hidden');
+    document.getElementById('appMain').classList.remove('hidden');
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '登 录';
+  }
+}
+
+function doLogout() {
+  token = '';
+  userName = '';
+  document.getElementById('loginOverlay').classList.remove('hidden');
+  document.getElementById('appHeader').classList.add('hidden');
+  document.getElementById('appMain').classList.add('hidden');
+}
+
+// Enter 键登录
+document.getElementById('loginPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+// ============================================================
+// 工具列表
+// ============================================================
+// 从工具描述中解析 core_type，格式: [core_type:xxx]
+function parseCoreType(description) {
+  const m = (description || '').match(/\[core_type:([^\]]+)\]/);
+  return m ? m[1] : '';
+}
+
+// 从描述中移除 [core_type:xxx] 标签用于显示
+function cleanDescription(description) {
+  return (description || '').replace(/\s*\[core_type:[^\]]+\]/, '').trim();
+}
+
+async function loadTools() {
+  const btn = document.getElementById('btnLoadTools');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span> 加载中...';
+
+  try {
+    const data = await api('/api/mcp/tools');
+    tools = data.tools;
+
+    // 隐藏加载按钮，显示主内容
+    document.getElementById('loadToolsCard').classList.add('hidden');
+    document.getElementById('appContent').classList.remove('hidden');
+
+    renderTools();
+    renderStreamCoreTypes();
+  } catch (e) {
+    showToast('加载工具失败: ' + e.message, 'error');
+    btn.disabled = false;
+    btn.textContent = '获取评测工具';
+  }
+}
+
+function renderTools() {
+  const grid = document.getElementById('toolGrid');
+  // 过滤掉流式工具
+  const evalTools = tools.filter(t => !t.name.startsWith('create_stream'));
+  grid.innerHTML = evalTools.map(t => `
+    <div class="tool-item ${selectedTool === t.name ? 'selected' : ''}"
+         onclick="selectTool('${t.name}')">
+      <div class="tool-name">${t.name}</div>
+      <div class="tool-desc">${cleanDescription(t.description)}</div>
+    </div>
+  `).join('');
+}
+
+function selectTool(name) {
+  selectedTool = name;
+  renderTools();
+}
+
+function renderStreamCoreTypes() {
+  const select = document.getElementById('streamCoreType');
+  // 从 create_stream_session 工具的 inputSchema.enum 中提取支持的 core_type
+  const streamTool = tools.find(t => t.name === 'create_stream_session');
+  const coreTypeEnum = streamTool
+    && streamTool.inputSchema
+    && streamTool.inputSchema.properties
+    && streamTool.inputSchema.properties.core_type
+    && streamTool.inputSchema.properties.core_type.enum;
+
+  if (!coreTypeEnum || coreTypeEnum.length === 0) {
+    select.innerHTML = '<option value="">无可用评测类型</option>';
+    return;
+  }
+
+  // 用工具描述中的 core_type 描述来生成友好标签
+  const descText = (streamTool.inputSchema.properties.core_type.description || '');
+  select.innerHTML = coreTypeEnum.map((ct, i) => {
+    // 从描述中提取如 "en.word.score(英文单词评测)" 的中文标签
+    const m = descText.match(new RegExp(ct.replace(/\./g, '\\.') + '\\(([^)]+)\\)'));
+    const label = m ? `${m[1]} (${ct})` : ct;
+    return `<option value="${ct}" ${i === 0 ? 'selected' : ''}>${label}</option>`;
+  }).join('');
+}
+
+// ============================================================
+// Tab 切换
+// ============================================================
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+  document.getElementById('tabEval').classList.toggle('hidden', tab !== 'eval');
+  document.getElementById('tabStream').classList.toggle('hidden', tab !== 'stream');
+}
+
+// ============================================================
+// 音频来源切换
+// ============================================================
+function toggleAudioSrc() {
+  const isUrl = document.querySelector('input[name="audioSrc"]:checked').value === 'url';
+  document.getElementById('audioUrlGroup').classList.toggle('hidden', !isUrl);
+  document.getElementById('audioFileGroup').classList.toggle('hidden', isUrl);
+}
+
+// ============================================================
+// 非流式评测
+// ============================================================
+async function doEval() {
+  if (!selectedTool) {
+    showToast('请先选择评测工具', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btnEval');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span> 评测中...';
+
+  const args = { ref_text: document.getElementById('refText').value };
+  const audioSrc = document.querySelector('input[name="audioSrc"]:checked').value;
+
+  if (audioSrc === 'url') {
+    args.audio_url = document.getElementById('audioUrl').value;
+  } else {
+    const file = document.getElementById('audioFile').files[0];
+    if (!file) {
+      showToast('请选择音频文件', 'error');
+      btn.disabled = false;
+      btn.textContent = '开始评测';
+      return;
+    }
+    const reader = new FileReader();
+    const b64 = await new Promise(resolve => {
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.readAsDataURL(file);
+    });
+    args.audio_base64 = b64;
+  }
+
+  try {
+    const data = await api('/api/mcp/call', {
+      method: 'POST',
+      body: JSON.stringify({ tool: selectedTool, arguments: args }),
+    });
+
+    if (data.success) {
+      displayResult(data.result);
+    } else {
+      showToast('评测失败: ' + (data.error || 'unknown'), 'error');
+    }
+  } catch (e) {
+    showToast('请求失败: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '开始评测';
+  }
+}
+
+function displayResult(result) {
+  const panel = document.getElementById('evalResult');
+  panel.classList.add('visible');
+
+  const r = result.result || {};
+  const grid = document.getElementById('scoreGrid');
+  const scores = [
+    { label: '综合', value: r.overall },
+    { label: '准确度', value: r.accuracy },
+    { label: '发音', value: r.pron },
+    { label: '完整度', value: r.integrity },
+  ];
+
+  if (r.fluency) {
+    scores.push({ label: '流利度', value: r.fluency.overall });
+  }
+
+  grid.innerHTML = scores
+    .filter(s => s.value !== undefined)
+    .map(s => `
+      <div class="score-item">
+        <div class="score-value ${scoreClass(s.value)}">${s.value}</div>
+        <div class="score-label">${s.label}</div>
+      </div>
+    `).join('');
+
+  // 详细信息
+  const detailSection = document.getElementById('detailSection');
+  if (r.details && r.details.length > 0) {
+    detailSection.innerHTML = `
+      <table class="detail-table">
+        <thead><tr><th>单词</th><th>得分</th><th>开始</th><th>结束</th></tr></thead>
+        <tbody>
+          ${r.details.map(d => `
+            <tr>
+              <td style="font-weight:600">${d.char || ''}</td>
+              <td><span class="score-value ${scoreClass(d.score)}" style="font-size:16px">${d.score}</span></td>
+              <td style="color:var(--text-secondary)">${d.start || ''}ms</td>
+              <td style="color:var(--text-secondary)">${d.end || ''}ms</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  } else {
+    detailSection.innerHTML = '';
+  }
+
+  document.getElementById('resultJson').textContent = JSON.stringify(result, null, 2);
+}
+
+function toggleJson() {
+  document.getElementById('resultJson').classList.toggle('hidden');
+}
+
+// ============================================================
+// 流式评测
+// ============================================================
+async function toggleRecord() {
+  if (isRecording) {
+    stopRecord();
+  } else {
+    startRecord();
+  }
+}
+
+async function startRecord() {
+  const coreType = document.getElementById('streamCoreType').value;
+  const refText = document.getElementById('streamRefText').value;
+  const audioType = 'mp3';
+
+  if (!refText) {
+    showToast('请输入参考文本', 'error');
+    return;
+  }
+
+  setStreamStatus('processing', '创建会话...');
+
+  try {
+    // 1. 创建流式会话
+    const data = await api('/api/mcp/stream/create', {
+      method: 'POST',
+      body: JSON.stringify({
+        core_type: coreType,
+        ref_text: refText,
+        audio_type: audioType,
+        sample_rate: 16000,
+      }),
+    });
+
+    if (!data.ws_url) {
+      showToast('未获取到 WebSocket 地址', 'error');
+      setStreamStatus('', '等待开始');
+      return;
+    }
+
+    // 2. 连接 WebSocket
+    const wsUrl = data.ws_url;
+    ws = new WebSocket(wsUrl);
+    ws.binaryType = 'arraybuffer';
+
+    ws.onopen = async () => {
+      setStreamStatus('connected', '已连接，开始录音...');
+
+      // 3. 开始录音
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: { sampleRate: 16000, channelCount: 1 }
+        });
+
+        // 音频可视化
+        audioContext = new AudioContext({ sampleRate: 16000 });
+        const source = audioContext.createMediaStreamSource(stream);
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        source.connect(analyser);
+        drawViz();
+
+        // 根据音频类型选择 MediaRecorder 的 mimeType
+        let mimeType = 'audio/webm;codecs=opus';
+        if (audioType === 'wav' || audioType === 'pcm') {
+          // PCM/WAV 需要通过 AudioWorklet 或 ScriptProcessor 处理
+          // 简化示例中使用 webm，实际生产中应使用 PCM 编码
+          mimeType = 'audio/webm;codecs=opus';
+        }
+
+        mediaRecorder = new MediaRecorder(stream, {
+          mimeType: MediaRecorder.isTypeSupported(mimeType) ? mimeType : undefined,
+          audioBitsPerSecond: 64000,
+        });
+
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0 && ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(e.data);
+          }
+        };
+
+        mediaRecorder.start(200); // 每 200ms 发送一块
+        isRecording = true;
+        document.getElementById('btnRecord').classList.add('recording');
+        setStreamStatus('recording', '录音中...');
+      } catch (e) {
+        showToast('无法获取麦克风: ' + e.message, 'error');
+        ws.close();
+        setStreamStatus('', '等待开始');
+      }
+    };
+
+    ws.onmessage = (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+        if (msg.type === 'result') {
+          displayStreamResult(msg.data);
+          setStreamStatus('connected', '评测完成');
+        } else if (msg.type === 'error') {
+          showToast('评测错误: ' + (msg.data.message || ''), 'error');
+          setStreamStatus('', '评测出错');
+        } else if (msg.type === 'intermediate') {
+          setStreamStatus('processing', '处理中...');
+        }
+      } catch (err) {
+        // ignore parse errors
+      }
+    };
+
+    ws.onerror = () => {
+      showToast('WebSocket 连接错误', 'error');
+      cleanupStream();
+    };
+
+    ws.onclose = () => {
+      cleanupStream();
+    };
+  } catch (e) {
+    showToast('创建会话失败: ' + e.message, 'error');
+    setStreamStatus('', '等待开始');
+  }
+}
+
+function stopRecord() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
+    mediaRecorder.stream.getTracks().forEach(t => t.stop());
+  }
+
+  // 发送 stop 命令
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ cmd: 'stop' }));
+    setStreamStatus('processing', '等待评测结果...');
+  }
+
+  isRecording = false;
+  document.getElementById('btnRecord').classList.remove('recording');
+
+  if (animFrameId) {
+    cancelAnimationFrame(animFrameId);
+    animFrameId = null;
+  }
+  if (audioContext) {
+    audioContext.close();
+    audioContext = null;
+  }
+}
+
+function cleanupStream() {
+  if (isRecording) stopRecord();
+  ws = null;
+  isRecording = false;
+  document.getElementById('btnRecord').classList.remove('recording');
+}
+
+function setStreamStatus(state, text) {
+  const dot = document.getElementById('statusDot');
+  dot.className = 'status-dot' + (state ? ' ' + state : '');
+  document.getElementById('statusText').textContent = text;
+}
+
+function displayStreamResult(result) {
+  const panel = document.getElementById('streamResult');
+  panel.classList.add('visible');
+
+  const r = result.result || {};
+  const grid = document.getElementById('streamScoreGrid');
+  const scores = [
+    { label: '综合', value: r.overall },
+    { label: '准确度', value: r.accuracy },
+    { label: '发音', value: r.pron },
+    { label: '完整度', value: r.integrity },
+  ];
+  if (r.fluency) scores.push({ label: '流利度', value: r.fluency.overall });
+
+  grid.innerHTML = scores
+    .filter(s => s.value !== undefined)
+    .map(s => `
+      <div class="score-item">
+        <div class="score-value ${scoreClass(s.value)}">${s.value}</div>
+        <div class="score-label">${s.label}</div>
+      </div>
+    `).join('');
+
+  const detailSection = document.getElementById('streamDetailSection');
+  if (r.details && r.details.length > 0) {
+    detailSection.innerHTML = `
+      <table class="detail-table">
+        <thead><tr><th>单词</th><th>得分</th><th>开始</th><th>结束</th></tr></thead>
+        <tbody>
+          ${r.details.map(d => `
+            <tr>
+              <td style="font-weight:600">${d.char || ''}</td>
+              <td><span class="score-value ${scoreClass(d.score)}" style="font-size:16px">${d.score}</span></td>
+              <td style="color:var(--text-secondary)">${d.start || ''}ms</td>
+              <td style="color:var(--text-secondary)">${d.end || ''}ms</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  } else {
+    detailSection.innerHTML = '';
+  }
+
+  document.getElementById('streamResultJson').textContent = JSON.stringify(result, null, 2);
+}
+
+function toggleStreamJson() {
+  document.getElementById('streamResultJson').classList.toggle('hidden');
+}
+
+// ============================================================
+// 音频可视化
+// ============================================================
+function drawViz() {
+  const canvas = document.getElementById('vizCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * 2;
+  canvas.height = canvas.offsetHeight * 2;
+
+  function draw() {
+    if (!analyser) return;
+    animFrameId = requestAnimationFrame(draw);
+
+    const bufLen = analyser.frequencyBinCount;
+    const dataArr = new Uint8Array(bufLen);
+    analyser.getByteFrequencyData(dataArr);
+
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const barW = (canvas.width / bufLen) * 2.5;
+    let x = 0;
+
+    for (let i = 0; i < bufLen; i++) {
+      const barH = (dataArr[i] / 255) * canvas.height;
+      const hue = (i / bufLen) * 120 + 200;
+      ctx.fillStyle = `hsla(${hue}, 80%, 60%, 0.8)`;
+      ctx.fillRect(x, canvas.height - barH, barW - 1, barH);
+      x += barW;
+    }
+  }
+  draw();
+}
+</script>
+</body>
+</html>
