@@ -2,7 +2,7 @@
 
 ## Setup
 
-1. Get your API Key from [Chivox](https://www.chivox.com) (format: `sk-xxx`)
+1. Get your API Key from the [Chivox API Portal](https://api-portal.cloud.chivox.com) (format: `sk-xxx`)
 
 2. Open Cursor Settings > MCP
 

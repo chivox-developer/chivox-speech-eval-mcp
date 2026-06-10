@@ -29,7 +29,7 @@ Chivox Speech Evaluation MCP Server exposes professional speech assessment capab
 
 #### 1. Get Your API Key
 
-Contact [Chivox](https://www.chivox.com) to obtain your API Key (`sk-xxx` format).
+Sign up at the [Chivox API Portal](https://api-portal.cloud.chivox.com) to obtain your API Key (`sk-xxx` format).
 
 #### 2. Configure Your AI Client
 
@@ -146,7 +146,7 @@ Ask your AI assistant:
 
 #### 1. 获取 API Key
 
-联系[驰声](https://www.chivox.com)获取 API Key（`sk-xxx` 格式）。
+访问[驰声 API 门户](https://api-portal.cloud.chivox.com)注册并获取 API Key（`sk-xxx` 格式）。
 
 #### 2. 配置 AI 客户端
 
@@ -246,4 +246,4 @@ Ask your AI assistant:
 
 The example code and documentation in this repository are licensed under the [MIT License](LICENSE).
 
-The Chivox Speech Evaluation MCP Service itself is a commercial product. Please contact [Chivox](https://www.chivox.com) for service access and pricing.
+The Chivox Speech Evaluation MCP Service itself is a commercial product. Visit the [Chivox API Portal](https://api-portal.cloud.chivox.com) for service access and pricing.
