@@ -56,7 +56,7 @@ Authorization: Bearer <token>
 Authorization: Bearer sk-a1b2c3d4e5f6...
 ```
 
-API Key 通过平台控制台创建和管理，关联有总量配额和周期配额。
+API Key 通过 [API 门户](https://api-portal.cloud.chivox.com) 创建和管理，关联有总量配额和周期配额。
 
 ### 2.2 B2B 认证（JWT 签名）
 
@@ -64,7 +64,7 @@ API Key 通过平台控制台创建和管理，关联有总量配额和周期配
 
 **凭证说明：**
 
-企业租户通过平台获取一对凭证：
+企业租户通过 [API 门户](https://api-portal.cloud.chivox.com) 获取一对凭证：
 
 | 凭证 | 格式 | 用途 |
 |------|------|------|
