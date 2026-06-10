@@ -10,7 +10,7 @@
 {
   "mcpServers": {
     "chivox-eval": {
-      "url": "https://mcp.cloud.chivox.com",
+      "url": "https://mcp-global.cloud.chivox.com",
       "headers": {
         "Authorization": "Bearer sk-your-api-key"
       }
@@ -39,7 +39,7 @@ For enterprise users with Access Key / Secret Key, generate a JWT token first (s
 {
   "mcpServers": {
     "chivox-eval": {
-      "url": "https://mcp.cloud.chivox.com",
+      "url": "https://mcp-global.cloud.chivox.com",
       "headers": {
         "Authorization": "Bearer <your-jwt-token>"
       }

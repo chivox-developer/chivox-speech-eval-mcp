@@ -12,7 +12,7 @@
   python server.py
 
 环境变量：
-  MCP_BASE_URL   - MCP 服务地址 (默认 https://mcp.cloud.chivox.com)
+  MCP_BASE_URL   - MCP 服务地址 (默认 https://mcp-global.cloud.chivox.com)
   MCP_API_KEY    - 你的 API Key (sk-xxx)
   SERVER_SECRET  - 用户 Token 签名密钥
 """
@@ -32,7 +32,7 @@ import requests as http_requests
 # 配置
 # ============================================================
 
-MCP_BASE_URL = os.environ.get("MCP_BASE_URL", "https://mcp.cloud.chivox.com")
+MCP_BASE_URL = os.environ.get("MCP_BASE_URL", "https://mcp-global.cloud.chivox.com")
 MCP_API_KEY = os.environ.get("MCP_API_KEY", "sk-your-api-key-here")
 SERVER_SECRET = os.environ.get("SERVER_SECRET", "change-me-in-production")
 PORT = int(os.environ.get("PORT", "5000"))
@@ -276,7 +276,7 @@ def create_stream():
     返回：
     {
         "session_id": "stream-xxx",
-        "ws_url": "ws://mcp.cloud.chivox.com/ws/audio/stream-xxx"
+        "ws_url": "ws://mcp-global.cloud.chivox.com/ws/audio/stream-xxx"
     }
     """
     data = request.get_json(silent=True) or {}

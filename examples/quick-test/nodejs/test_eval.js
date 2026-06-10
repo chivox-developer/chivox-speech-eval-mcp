@@ -6,7 +6,7 @@
  */
 
 const API_KEY = "sk-your-api-key";
-const BASE_URL = "https://mcp.cloud.chivox.com";
+const BASE_URL = "https://mcp-global.cloud.chivox.com";
 
 let sessionId = null;
 

@@ -3,7 +3,7 @@
 # Usage: API_KEY=sk-xxx bash test_eval.sh
 
 API_KEY="${API_KEY:-sk-your-api-key}"
-BASE_URL="${BASE_URL:-https://mcp.cloud.chivox.com}"
+BASE_URL="${BASE_URL:-https://mcp-global.cloud.chivox.com}"
 
 echo "=== 1. Initialize ==="
 INIT_RESP=$(curl -s -X POST "$BASE_URL/" \

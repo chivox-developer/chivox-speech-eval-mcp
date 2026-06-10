@@ -27,7 +27,7 @@ pip install -r requirements.txt
 
 # Set environment variables
 export MCP_API_KEY="sk-your-api-key"
-export MCP_BASE_URL="https://mcp.cloud.chivox.com"  # optional, this is the default
+export MCP_BASE_URL="https://mcp-global.cloud.chivox.com"  # optional, this is the default
 export SERVER_SECRET="your-session-secret"
 
 # Run

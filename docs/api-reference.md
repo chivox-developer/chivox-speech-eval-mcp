@@ -1,6 +1,6 @@
 # 驰声语音评测 MCP 服务接入文档
 
-> 服务地址：`https://mcp.cloud.chivox.com`
+> 服务地址：`https://mcp-global.cloud.chivox.com`
 
 ---
 
@@ -33,8 +33,8 @@
 
 | 端点 | 说明 |
 |------|------|
-| `POST https://mcp.cloud.chivox.com/` | MCP JSON-RPC 主端点 |
-| `WSS wss://mcp.cloud.chivox.com/ws/audio/{session_id}` | 流式评测 WebSocket 端点 |
+| `POST https://mcp-global.cloud.chivox.com/` | MCP JSON-RPC 主端点 |
+| `WSS wss://mcp-global.cloud.chivox.com/ws/audio/{session_id}` | 流式评测 WebSocket 端点 |
 
 ---
 
@@ -192,7 +192,7 @@ String token = Jwts.builder()
 
 ## 3. MCP 协议交互
 
-服务使用 MCP JSON-RPC 2.0 协议，所有请求发送至 `POST https://mcp.cloud.chivox.com/`。
+服务使用 MCP JSON-RPC 2.0 协议，所有请求发送至 `POST https://mcp-global.cloud.chivox.com/`。
 
 ### 3.1 初始化连接
 
@@ -387,7 +387,7 @@ String token = Jwts.builder()
 {
   "session_id": "stream-1720000000000-a3b2c1",
   "status": "created",
-  "ws_url": "wss://mcp.cloud.chivox.com/ws/audio/stream-1720000000000-a3b2c1",
+  "ws_url": "wss://mcp-global.cloud.chivox.com/ws/audio/stream-1720000000000-a3b2c1",
   "message": "会话已创建。通过 WebSocket 连接 ws_url 发送音频流"
 }
 ```
@@ -425,7 +425,7 @@ import httpx
 import websockets
 
 API_KEY = "sk-your-api-key"
-BASE_URL = "https://mcp.cloud.chivox.com"
+BASE_URL = "https://mcp-global.cloud.chivox.com"
 HEADERS = {
     "Authorization": f"Bearer {API_KEY}",
     "Content-Type": "application/json",
@@ -499,7 +499,7 @@ asyncio.run(stream_eval("audio.mp3", "en.sent.score", "hello world"))
 {
   "mcpServers": {
     "chivox-eval": {
-      "url": "https://mcp.cloud.chivox.com/",
+      "url": "https://mcp-global.cloud.chivox.com/",
       "headers": {
         "Authorization": "Bearer <your_token>"
       }
@@ -512,14 +512,14 @@ asyncio.run(stream_eval("audio.mp3", "en.sent.score", "hello world"))
 
 在 Cursor 的 MCP 设置中添加远程服务器：
 
-- **URL：** `https://mcp.cloud.chivox.com/`
+- **URL：** `https://mcp-global.cloud.chivox.com/`
 - **Headers：** `Authorization: Bearer <your_token>`
 
 ### 6.3 自定义客户端
 
 使用任何支持 MCP 协议的客户端库接入，核心流程：
 
-1. 向 `POST https://mcp.cloud.chivox.com/` 发送 `initialize` 请求
+1. 向 `POST https://mcp-global.cloud.chivox.com/` 发送 `initialize` 请求
 2. 发送 `tools/list` 获取可用工具
 3. 发送 `tools/call` 调用具体评测工具
 4. 所有请求携带 `Authorization: Bearer <token>` 头

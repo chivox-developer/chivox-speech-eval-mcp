@@ -8,7 +8,7 @@
 
 3. Add a new remote MCP server:
    - **Name:** `chivox-eval`
-   - **URL:** `https://mcp.cloud.chivox.com/`
+   - **URL:** `https://mcp-global.cloud.chivox.com/`
    - **Headers:** `Authorization: Bearer sk-your-api-key`
 
 Alternatively, create `.cursor/mcp.json` in your project root:
@@ -17,7 +17,7 @@ Alternatively, create `.cursor/mcp.json` in your project root:
 {
   "mcpServers": {
     "chivox-eval": {
-      "url": "https://mcp.cloud.chivox.com",
+      "url": "https://mcp-global.cloud.chivox.com",
       "headers": {
         "Authorization": "Bearer sk-your-api-key"
       }

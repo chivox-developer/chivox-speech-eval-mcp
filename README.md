@@ -14,7 +14,7 @@
 
 Chivox Speech Evaluation MCP Server exposes professional speech assessment capabilities as [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) tools. Connect your AI assistant to our cloud service and let it evaluate pronunciation quality for English and Chinese.
 
-**Service endpoint:** `https://mcp.cloud.chivox.com`
+**Service endpoint:** `https://mcp-global.cloud.chivox.com`
 
 ### Features
 
@@ -39,7 +39,7 @@ Contact [Chivox](https://www.chivox.com) to obtain your API Key (`sk-xxx` format
 {
   "mcpServers": {
     "chivox-eval": {
-      "url": "https://mcp.cloud.chivox.com",
+      "url": "https://mcp-global.cloud.chivox.com",
       "headers": {
         "Authorization": "Bearer sk-your-api-key"
       }
@@ -50,7 +50,7 @@ Contact [Chivox](https://www.chivox.com) to obtain your API Key (`sk-xxx` format
 
 **Cursor** — Add remote MCP server in Settings > MCP:
 
-- URL: `https://mcp.cloud.chivox.com/`
+- URL: `https://mcp-global.cloud.chivox.com/`
 - Headers: `Authorization: Bearer sk-your-api-key`
 
 #### 3. Try It
@@ -98,7 +98,7 @@ Ask your AI assistant:
 ```
 1. Create session    →  tools/call: create_stream_session
                          ↓ returns ws_url
-2. Connect WebSocket →  wss://mcp.cloud.chivox.com/ws/audio/{session_id}
+2. Connect WebSocket →  wss://mcp-global.cloud.chivox.com/ws/audio/{session_id}
                          ↓
 3. Send audio frames →  Binary frames (8KB chunks recommended)
                          ↓
@@ -131,7 +131,7 @@ Ask your AI assistant:
 
 驰声语音评测 MCP 服务基于 [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) 标准，将专业语音评测能力封装为 MCP 工具，供 AI 客户端（Claude Desktop、Cursor 等）直接调用。
 
-**服务地址：** `https://mcp.cloud.chivox.com`
+**服务地址：** `https://mcp-global.cloud.chivox.com`
 
 ### 功能特性
 
@@ -156,7 +156,7 @@ Ask your AI assistant:
 {
   "mcpServers": {
     "chivox-eval": {
-      "url": "https://mcp.cloud.chivox.com",
+      "url": "https://mcp-global.cloud.chivox.com",
       "headers": {
         "Authorization": "Bearer sk-your-api-key"
       }
@@ -167,7 +167,7 @@ Ask your AI assistant:
 
 **Cursor** — 在 Settings > MCP 中添加远程服务器：
 
-- URL：`https://mcp.cloud.chivox.com/`
+- URL：`https://mcp-global.cloud.chivox.com/`
 - Headers：`Authorization: Bearer sk-your-api-key`
 
 #### 3. 开始使用
@@ -215,7 +215,7 @@ Ask your AI assistant:
 ```
 1. 创建会话      →  tools/call: create_stream_session
                       ↓ 返回 ws_url
-2. 连接 WebSocket →  wss://mcp.cloud.chivox.com/ws/audio/{session_id}
+2. 连接 WebSocket →  wss://mcp-global.cloud.chivox.com/ws/audio/{session_id}
                       ↓
 3. 推送音频帧     →  二进制帧（建议每帧 8KB）
                       ↓

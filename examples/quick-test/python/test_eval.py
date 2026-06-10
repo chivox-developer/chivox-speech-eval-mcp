@@ -9,7 +9,7 @@ import json
 import httpx
 
 API_KEY = "sk-your-api-key"
-BASE_URL = "https://mcp.cloud.chivox.com"
+BASE_URL = "https://mcp-global.cloud.chivox.com"
 HEADERS = {
     "Authorization": f"Bearer {API_KEY}",
     "Content-Type": "application/json",
