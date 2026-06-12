@@ -1,15 +1,19 @@
 <div align="center">
 
-<a href="./assets/chivox-mcp.mp4" title="▶ Play product demo">
-  <img
-    align="center"
-    src="./assets/hero-v19-2x.png"
-    alt="Chivox MCP — Give your LLM ears. Click anywhere to watch the product demo."
-    width="720"
-  />
-</a>
+<img
+  align="center"
+  src="./assets/hero-v19-2x.png"
+  alt="Chivox MCP — Give your LLM ears."
+  width="720"
+/>
 
-<br/><br/>
+<br/>
+
+<video src="https://github.com/chivox-developer/chivox-speech-eval-mcp/raw/main/assets/chivox-mcp.mp4" controls width="720">
+  Your browser does not support the video tag.
+</video>
+
+<br/>
 
 <a href="https://api-portal.cloud.chivox.com/docs"><img src="https://img.shields.io/badge/📖_Full_docs-api--portal.cloud.chivox.com-2563EB?style=for-the-badge" alt="Full documentation"/></a>
 &nbsp;
