@@ -341,7 +341,7 @@ For quick demos, yes — but production traffic should flow through your backend
 ```
 1. Create session    →  tools/call: create_stream_session
                          ↓ returns ws_url
-2. Connect WebSocket →  wss://mcp-global.cloud.chivox.com/ws/audio/{session_id}
+2. Connect WebSocket →  wss://{ws_url}/ws/audio/{session_id}
                          ↓
 3. Send audio frames →  Binary frames (8KB chunks recommended)
                          ↓
@@ -675,7 +675,7 @@ asyncio.run(main())
 ```
 1. 创建会话      →  tools/call: create_stream_session
                       ↓ 返回 ws_url
-2. 连接 WebSocket →  wss://mcp-global.cloud.chivox.com/ws/audio/{session_id}
+2. 连接 WebSocket →  wss://{ws_url}/ws/audio/{session_id}
                       ↓
 3. 推送音频帧     →  二进制帧（建议每帧 8KB）
                       ↓
